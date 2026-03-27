@@ -247,7 +247,7 @@ def render_apt_map(selected_df, map_type):
 # --- 4. 메인 UI 레이아웃 (구조 변경) ---
 # 화면을 1:1.2 비율로 나눕니다.
 col_left, col_right = st.columns([1, 1.2])
-
+region_df = load_region_data()
 # 왼쪽: 데이터 관리
 with col_left:
     st.title("🏢 단지 선택 및 관리")
