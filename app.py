@@ -44,13 +44,27 @@ def load_region_data():
     csv_path = 'region.csv'
     if os.path.exists(csv_path):
         try:
-            df = pd.read_csv(csv_path, encoding='utf-8')
-        except:
-            df = pd.read_csv(csv_path, encoding='cp949')
-        return df.dropna(subset=['sigungu', 'region'])
-    return pd.DataFrame(columns=['sigungu', 'region', 'dongcode'])
-
-region_df = load_region_data()
+            # 1. 인코딩 시도 (utf-8 -> cp949 순서)
+            try:
+                df = pd.read_csv(csv_path, encoding='utf-8')
+            except:
+                df = pd.read_csv(csv_path, encoding='cp949')
+            
+            # 2. 데이터 청소 (매우 중요!)
+            # 문자열 컬럼들의 양끝 공백을 제거하여 검색 실패 방지
+            for col in ['sigungu', 'region']:
+                if col in df.columns:
+                    df[col] = df[col].astype(str).str.strip()
+            
+            # 3. 비어있는 행 제거
+            return df.dropna(subset=['sigungu', 'region', 'dongcode'])
+            
+        except Exception as e:
+            st.error(f"❌ CSV 파일을 읽는 중 오류가 발생했습니다: {e}")
+            return pd.DataFrame(columns=['sigungu', 'region', 'dongcode'])
+    else:
+        st.error(f"⚠️ '{csv_path}' 파일을 찾을 수 없습니다. GitHub 업로드 여부를 확인하세요.")
+        return pd.DataFrame(columns=['sigungu', 'region', 'dongcode'])
 
 # [기존 쿠키/헤더 설정]
 COOKIES = {
