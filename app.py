@@ -95,13 +95,20 @@ COOKIES = {
     'BUC': '47ogVLRbNFYSvJgPBe5oXfw50HGF4jS5YzyYhx6bdy0=',
 }
     
+# 기존 HEADERS를 더 정교하게 바꿉니다.
 HEADERS = {
     'authority': 'fin.land.naver.com',
     'accept': 'application/json, text/plain, */*',
+    'accept-language': 'ko-KR,ko;q=0.9,en-US;q=0.8,en;q=0.7',
     'referer': 'https://fin.land.naver.com/regions',
-    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'sec-ch-ua': '"Not A(Branch";v="99", "Google Chrome";v="121", "Chromium";v="121"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    'sec-fetch-dest': 'empty',
+    'sec-fetch-mode': 'cors',
+    'sec-fetch-site': 'same-origin',
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
 }
-
 # --- 데이터 수집 함수 (기존 로직 유지) ---
 def fetch_recent_kb_price(complex_num, pyeong_num):
     today = datetime.now()
