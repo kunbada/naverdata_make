@@ -156,17 +156,48 @@ def fetch_recent_5_real_prices(complex_num, pyeong_num):
 
 @st.cache_data(ttl=600)
 def fetch_full_complex_list(dong_code):
+    # 코드 전처리 (10자리 고정)
     clean_code = str(dong_code).split('.')[0].ljust(10, '0')[:10]
     url = "https://fin.land.naver.com/front-api/v1/complex/region"
-    params = {'eupLegalDivisionNumber': clean_code, 'size': '100', 'sortType': 'HOUSEHOLD', 'page': '0'}
+    
+    params = {
+        'eupLegalDivisionNumber': clean_code,
+        'size': '100',
+        'sortType': 'HOUSEHOLD',
+        'page': '0'
+    }
+    
     all_complexes = []
     try:
-        res = requests.get(url, params=params, cookies=COOKIES, headers=HEADERS, impersonate="chrome120").json()
-        curr_list = res.get('result', {}).get('list', [])
-        for item in curr_list:
-            if item.get('complexInfo', {}).get('type') in ['A01', 'A02']:
-                all_complexes.append(item['complexInfo'])
-    except: pass
+        # ⚠️ 중요: impersonate="chrome120" 옵션을 반드시 유지하세요.
+        response = requests.get(
+            url, 
+            params=params, 
+            cookies=COOKIES, 
+            headers=HEADERS, 
+            impersonate="chrome120",
+            timeout=15
+        )
+        
+        # 만약 성공하지 못했다면 화면에 에러 코드 출력
+        if response.status_code != 200:
+            st.error(f"❌ 네이버 응답 에러: {response.status_code}")
+            return []
+
+        res = response.json()
+        
+        if 'result' in res and res['result']:
+            curr_list = res['result'].get('list', [])
+            for item in curr_list:
+                if item.get('complexInfo', {}).get('type') in ['A01', 'A02']:
+                    all_complexes.append(item['complexInfo'])
+                    
+        if not all_complexes:
+            st.warning("⚠️ 해당 지역에 아파트 단지 정보가 없습니다.")
+            
+    except Exception as e:
+        st.error(f"⚠️ 연결 중 오류 발생: {e}")
+        
     return all_complexes
 
 @st.cache_data(ttl=3600)
